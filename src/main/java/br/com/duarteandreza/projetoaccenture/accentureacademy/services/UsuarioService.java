@@ -1,9 +1,8 @@
 package br.com.duarteandreza.projetoaccenture.accentureacademy.services;
 
-import br.com.duarteandreza.projetoaccenture.accentureacademy.domain.PerfilUsuario;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.domain.Usuario;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.EmailJaCadastradoException;
-import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.IdUsuarioNaoEncontradaException;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.IdNaoEncontradaException;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.LoginJaCadastradoException;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.repositories.UsuarioRepository;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.requests.AlterarDadosUsuarioRequest;
@@ -60,7 +59,7 @@ public class UsuarioService {
             usuarioRepository.save(usuario);
 
         } else {
-            throw new IdUsuarioNaoEncontradaException(id);
+            throw new IdNaoEncontradaException(id);
         }
 
         return usuarioRepository.save(usuario);
@@ -71,7 +70,7 @@ public class UsuarioService {
         Usuario usuario = buscarUsuarioId(id);
 
         if (usuario == null){
-            throw new IdUsuarioNaoEncontradaException(id);
+            throw new IdNaoEncontradaException(id);
         }
 
         usuario.setAtivo(false);
@@ -83,25 +82,25 @@ public class UsuarioService {
     public Usuario buscarUsuarioId(Long id) {
 
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new IdUsuarioNaoEncontradaException(id));
+                .orElseThrow(() -> new IdNaoEncontradaException(id));
 
     }
 
-    public Page<Usuario> listarPorNome(String nomeUsuario, Pageable pageable) {
-
-        return usuarioRepository.findByNome(nomeUsuario, pageable);
-
-    }
-
-    public Page<Usuario> listarPorEmail(String emailUsuario, Pageable pageable) {
-
-        return usuarioRepository.findByEmail(emailUsuario, pageable);
-
-    }
+//    public Page<Usuario> listarPorNome(String nomeUsuario, Pageable pageable) {
+//
+//        return usuarioRepository.findByNome(nomeUsuario, pageable);
+//
+//    }
+//
+//    public Page<Usuario> listarPorEmail(String emailUsuario, Pageable pageable) {
+//
+//        return usuarioRepository.findByEmail(emailUsuario, pageable);
+//
+//    }
 
     public Page<Usuario> listarPorNomeEEmail(String nomeUsuario, String emailUsuario, Pageable pageable) {
 
-        return usuarioRepository.findByNomeAndEmail(nomeUsuario, emailUsuario, pageable);
+        return usuarioRepository.findDistinctByNomeContainingIgnoreCaseAndEmail(nomeUsuario, emailUsuario, pageable);
 
     }
 }

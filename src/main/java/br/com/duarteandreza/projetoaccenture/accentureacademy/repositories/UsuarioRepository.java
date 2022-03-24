@@ -16,10 +16,11 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     boolean existsByEmail(String email);
 
-    Page<Usuario> findByNome(String nomeUsuario, Pageable pageable);
+//    Page<Usuario> findByNome(String nomeUsuario, Pageable pageable);
+//
+//    Page<Usuario> findByEmail(String emailUsuario, Pageable pageable);
+//
+//    Page<Usuario> findByNomeAndEmail(String nomeUsuario, String emailUsuario, Pageable pageable);
 
-    Page<Usuario> findByEmail(String emailUsuario, Pageable pageable);
-
-    Page<Usuario> findByNomeAndEmail(String nomeUsuario, String emailUsuario, Pageable pageable);
-
+    Page<Usuario> findDistinctByNomeContainingIgnoreCaseAndEmail(String nomeUsuario, String emailUsuario, Pageable pageable);
 }

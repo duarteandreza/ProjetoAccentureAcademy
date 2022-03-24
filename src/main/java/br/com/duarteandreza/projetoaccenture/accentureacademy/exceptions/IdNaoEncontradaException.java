@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import javax.validation.constraints.NotNull;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class IdUsuarioNaoEncontradaException extends RuntimeException {
-    public IdUsuarioNaoEncontradaException(@NotNull Long idInformado) {
-        super(String.format("Nenhum Usuario com Id com o valor '%s' foi encontrado.", idInformado));
+public class IdNaoEncontradaException extends RuntimeException {
+    public IdNaoEncontradaException(@NotNull Long idInformado) {
+        super(String.format("Nenhum Id com o valor '%s' foi encontrado.", idInformado));
     }
 }

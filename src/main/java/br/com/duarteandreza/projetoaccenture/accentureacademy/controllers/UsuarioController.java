@@ -42,19 +42,22 @@ public class UsuarioController {
         return usuarioService.buscarUsuarioId(id);
     }
 
-    @GetMapping (path = "/listarnome/{nomeUsuario}")
-    public Page<Usuario> listarUsuariosNome(String usuario, @PageableDefault(sort = "nome") @ApiIgnore Pageable pageable){
-        return usuarioService.listarPorNome(usuario, pageable);
-    }
-
-    @GetMapping (path = "/listaremail/{emailUsuario}")
-    public Page<Usuario> listarUsuariosEmail(String usuario, @PageableDefault(sort = "nome") @ApiIgnore Pageable pageable){
-        return usuarioService.listarPorEmail(usuario, pageable);
-    }
-
-    @GetMapping (path = "/listar/{nomeUsuario}/{emailUsuario}")
-    public Page<Usuario> listarUsuariosNomeEmail(String usuario, String email, @PageableDefault(sort = "nome") @ApiIgnore Pageable pageable){
+    @GetMapping (path = "/{nomeUsuario}/{emailUsuario}")
+    public Page<Usuario> listarUsuariosPorNomeEEmail(
+            @RequestParam String usuario,
+            @RequestParam String email,
+            @PageableDefault(sort = "nome") @ApiIgnore Pageable pageable){
         return usuarioService.listarPorNomeEEmail(usuario, email, pageable);
     }
+
+//    @GetMapping (path = "/listaremail/{emailUsuario}")
+//    public Page<Usuario> listarUsuariosEmail(String usuario, @PageableDefault(sort = "nome") @ApiIgnore Pageable pageable){
+//        return usuarioService.listarPorEmail(usuario, pageable);
+//    }
+//
+//    @GetMapping (path = "/listar/{nomeUsuario}/{emailUsuario}")
+//    public Page<Usuario> listarUsuariosNomeEmail(String usuario, String email, @PageableDefault(sort = "nome") @ApiIgnore Pageable pageable){
+//        return usuarioService.listarPorNomeEEmail(usuario, email, pageable);
+//    }
 
 }

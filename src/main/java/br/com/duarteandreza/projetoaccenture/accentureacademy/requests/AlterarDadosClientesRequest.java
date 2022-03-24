@@ -1,12 +1,7 @@
 package br.com.duarteandreza.projetoaccenture.accentureacademy.requests;
 
-import br.com.duarteandreza.projetoaccenture.accentureacademy.domain.PerfilUsuario;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 @Builder

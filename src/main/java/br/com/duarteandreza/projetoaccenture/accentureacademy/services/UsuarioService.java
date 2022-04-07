@@ -1,15 +1,17 @@
 package br.com.duarteandreza.projetoaccenture.accentureacademy.services;
 
 import br.com.duarteandreza.projetoaccenture.accentureacademy.domain.Usuario;
-import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.EmailJaCadastradoException;
-import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.IdNaoEncontradaException;
-import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.LoginJaCadastradoException;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.ObjetoJaExisteException;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.ObjetoNaoEncontradoException;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.repositories.UsuarioRepository;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.requests.AlterarDadosUsuarioRequest;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.specification.UsuarioSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UsuarioService {
@@ -22,13 +24,13 @@ public class UsuarioService {
         boolean loginJaCadastrado = usuarioRepository.existsByLogin(usuario.getLogin());
 
         if(loginJaCadastrado) {
-            throw new LoginJaCadastradoException(usuario.getLogin());
+            throw new ObjetoJaExisteException("Login informado já está cadastrado.");
         }
 
         boolean emailJaCadastrado = usuarioRepository.existsByEmail(usuario.getEmail());
 
         if(emailJaCadastrado) {
-            throw new EmailJaCadastradoException(usuario.getEmail());
+            throw new ObjetoJaExisteException("E-mail informado já está cadastrado.");
         }
 
 
@@ -49,7 +51,7 @@ public class UsuarioService {
                 usuario.getEmail();
             } else {
                 if (usuarioRepository.existsByEmail(alterarDadosRequest.getEmail())) {
-                    throw new EmailJaCadastradoException(alterarDadosRequest.getEmail());
+                    throw new ObjetoJaExisteException("E-mail informado já está cadastrado.");
                 } else {
                     usuario.setEmail(alterarDadosRequest.getEmail());
                 }
@@ -59,7 +61,7 @@ public class UsuarioService {
             usuarioRepository.save(usuario);
 
         } else {
-            throw new IdNaoEncontradaException(id);
+            throw new ObjetoNaoEncontradoException("Id não encontrado.");
         }
 
         return usuarioRepository.save(usuario);
@@ -70,7 +72,7 @@ public class UsuarioService {
         Usuario usuario = buscarUsuarioId(id);
 
         if (usuario == null){
-            throw new IdNaoEncontradaException(id);
+            throw new ObjetoNaoEncontradoException("Id não encontrado.");
         }
 
         usuario.setAtivo(false);
@@ -82,25 +84,28 @@ public class UsuarioService {
     public Usuario buscarUsuarioId(Long id) {
 
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new IdNaoEncontradaException(id));
+                .orElseThrow(() -> new ObjetoNaoEncontradoException("Id não encontrado."));
 
     }
 
-//    public Page<Usuario> listarPorNome(String nomeUsuario, Pageable pageable) {
-//
-//        return usuarioRepository.findByNome(nomeUsuario, pageable);
-//
-//    }
-//
-//    public Page<Usuario> listarPorEmail(String emailUsuario, Pageable pageable) {
-//
-//        return usuarioRepository.findByEmail(emailUsuario, pageable);
-//
-//    }
+    public List<Usuario> listarPorNomeEmail(String nome, String email) {
 
-    public Page<Usuario> listarPorNomeEEmail(String nomeUsuario, String emailUsuario, Pageable pageable) {
+        var specification = UsuarioSpecification.consultarPorNomeEmail(nome,email);
 
-        return usuarioRepository.findDistinctByNomeContainingIgnoreCaseAndEmail(nomeUsuario, emailUsuario, pageable);
+        return (List<Usuario>) usuarioRepository.findAll(specification);
+
+    }
+
+    public void login(Usuario loginUsuario) {
+
+        boolean loginValido = usuarioRepository.existsByLoginAndSenhaAndAtivo(loginUsuario.getLogin(), loginUsuario.getSenha(),
+                                                                                loginUsuario.getAtivo());
+
+        if (!loginValido){
+
+            throw new ObjetoNaoEncontradoException("Login inválido.");
+
+        }
 
     }
 }

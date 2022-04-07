@@ -1,6 +1,7 @@
 package br.com.duarteandreza.projetoaccenture.accentureacademy.controllers;
 
 import br.com.duarteandreza.projetoaccenture.accentureacademy.domain.Clientes;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.domain.Usuario;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.requests.AlterarDadosClientesRequest;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.services.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import javax.validation.constraints.FutureOrPresent;
+import java.util.List;
 
 @RestController
 @RequestMapping("/clientes")
@@ -42,10 +45,14 @@ public class ClienteController {
         return clienteService.buscarClienteId(id);
     }
 
-//    @GetMapping
-//    public Page<Clientes> listarClientes(Clientes cliente, @PageableDefault(sort = "nome") @ApiIgnore Pageable pageable){
-//        return clienteService.listar(cliente, pageable);
-//    }
+    @GetMapping
+    public List<Clientes> listarClientesPorNomeCpfCidadeUf(
+            @RequestParam (required = false) String nome,
+            @RequestParam (required = false) String cpfCnpj,
+            @RequestParam (required = false) String cidade,
+            @RequestParam (required = false) String uf){
+        return clienteService.listarPorNomeCpfCnpjCidadeUf(nome, cpfCnpj, cidade, uf);
+    }
 
 
 }

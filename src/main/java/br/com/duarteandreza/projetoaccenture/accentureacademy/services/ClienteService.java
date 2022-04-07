@@ -1,15 +1,19 @@
 package br.com.duarteandreza.projetoaccenture.accentureacademy.services;
 
 import br.com.duarteandreza.projetoaccenture.accentureacademy.domain.Clientes;
-import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.CpfCnpjJaCadastradoException;
-import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.EmailJaCadastradoException;
-import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.IdNaoEncontradaException;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.domain.Usuario;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.ObjetoJaExisteException;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.ObjetoNaoEncontradoException;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.repositories.ClientesRepository;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.requests.AlterarDadosClientesRequest;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.specification.ClienteSpecification;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.specification.UsuarioSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ClienteService {
@@ -23,13 +27,13 @@ public class ClienteService {
         boolean cpfCnpjJaCadastrado = clientesRepository.existsByCpfCnpj(cliente.getCpfCnpj());
 
         if(cpfCnpjJaCadastrado) {
-            throw new CpfCnpjJaCadastradoException(cliente.getCpfCnpj());
+            throw new ObjetoJaExisteException("CPF/CNPJ já existe.");
         }
 
         boolean emailJaCadastrado = clientesRepository.existsByEmail(cliente.getEmail());
 
         if(emailJaCadastrado) {
-            throw new EmailJaCadastradoException(cliente.getEmail());
+            throw new ObjetoJaExisteException("E-mail já existe.");
         }
 
 
@@ -52,7 +56,7 @@ public class ClienteService {
                 clientes.getEmail();
             } else {
                 if (clientesRepository.existsByEmail(alterarDadosClientesRequest.getEmail())) {
-                    throw new EmailJaCadastradoException(alterarDadosClientesRequest.getEmail());
+                    throw new ObjetoJaExisteException("E-mail já existe.");
                 } else {
                     clientes.setEmail(alterarDadosClientesRequest.getEmail());
                 }
@@ -62,7 +66,7 @@ public class ClienteService {
 
         } else {
 
-            throw new IdNaoEncontradaException(id);
+            throw new ObjetoNaoEncontradoException("Id não encontrado.");
 
         }
 
@@ -75,7 +79,7 @@ public class ClienteService {
         Clientes clientes = buscarClienteId(id);
 
         if (clientes == null){
-            throw new IdNaoEncontradaException(id);
+            throw new ObjetoNaoEncontradoException("Id não encontrado.");
         }
 
         clientesRepository.delete(clientes);
@@ -85,10 +89,15 @@ public class ClienteService {
     public Clientes buscarClienteId(Long id) {
 
         return clientesRepository.findById(id)
-                .orElseThrow(() -> new IdNaoEncontradaException(id));
+                .orElseThrow(() -> new ObjetoNaoEncontradoException("Id não encontrado."));
 
     }
 
-//    public Page<Clientes> listar(Clientes cliente, Pageable pageable) {
-//    }
+    public List<Clientes> listarPorNomeCpfCnpjCidadeUf(String nome, String cpfCnpj, String cidade, String uf) {
+
+        var specification = ClienteSpecification.consultarPorNomeCpfCnpjCidadeUf(nome, cpfCnpj, cidade, uf);
+
+        return (List<Clientes>) clientesRepository.findAll((Pageable) specification);
+
+    }
 }

@@ -2,9 +2,11 @@ package br.com.duarteandreza.projetoaccenture.accentureacademy.services;
 
 import br.com.duarteandreza.projetoaccenture.accentureacademy.domain.Clientes;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.domain.LivroCaixa;
-import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.IdNaoEncontradaException;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.ObjetoJaExisteException;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.exceptions.ObjetoNaoEncontradoException;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.repositories.LivroCaixaRepository;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.requests.AlterarDadosLivroRequest;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.requests.CadastrarLivroRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,17 +18,27 @@ public class LivroCaixaService {
     @Autowired
     private LivroCaixaRepository livroCaixaRepository;
     @Autowired
-    private Clientes clientes;
+    private ClienteService clienteService;
 
-    public LivroCaixa incluir(LivroCaixa livroCaixa) {
+    public LivroCaixa incluir(CadastrarLivroRequest cadastrarLivroRequest) {
 
-        if (clientes.getId().equals(livroCaixa.getIdCliente())) {
+
+        LivroCaixa clienteEncontrado = buscarLivroId(cadastrarLivroRequest.getIdcliente());
+
+        LivroCaixa livroCaixa = new LivroCaixa();
+        //livroCaixa.setCliente(clienteEncontrado);
+        livroCaixa.setDataLancamento(cadastrarLivroRequest.getDataLancamento());
+        livroCaixa.setDescricao(cadastrarLivroRequest.getDescricao());
+        livroCaixa.setTipoLacamentoCaixa(cadastrarLivroRequest.getTipoLacamentoCaixa());
+        livroCaixa.setValor(cadastrarLivroRequest.getValor());
+
+        if (clienteEncontrado != null) {
             livroCaixaRepository.save(livroCaixa);
         } else {
-            throw new IdNaoEncontradaException(clientes.getId());
+            throw new ObjetoNaoEncontradoException("Id não encontrado.");
         }
 
-        return livroCaixaRepository.save(livroCaixa);
+        return livroCaixa;
 
     }
 
@@ -43,7 +55,7 @@ public class LivroCaixaService {
 
         } else {
 
-            throw new IdNaoEncontradaException(id);
+            throw new ObjetoNaoEncontradoException("Id não encontrado.");
 
         }
 
@@ -56,7 +68,7 @@ public class LivroCaixaService {
         LivroCaixa livroCaixa = buscarLivroId(id);
 
         if (livroCaixa == null){
-            throw new IdNaoEncontradaException(id);
+            throw new ObjetoNaoEncontradoException("Id não encontrado.");
         }
 
         livroCaixaRepository.delete(livroCaixa);
@@ -66,10 +78,15 @@ public class LivroCaixaService {
     public LivroCaixa buscarLivroId(Long id) {
 
         return livroCaixaRepository.findById(id)
-                .orElseThrow(() -> new IdNaoEncontradaException(id));
+                .orElseThrow(() -> new ObjetoNaoEncontradoException("Id não encontrado."));
 
     }
 
-//    public Page<LivroCaixa> listar(LivroCaixa livroCaixa, Pageable pageable) {
-//    }
+    public Page<LivroCaixa> listarLivroCaixaIdCliente(Long idCliente, Pageable pageable) {
+
+        return livroCaixaRepository.findAllByClienteId(idCliente, pageable);
+
+    }
+
+
 }

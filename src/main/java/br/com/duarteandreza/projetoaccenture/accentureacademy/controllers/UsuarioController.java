@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -42,22 +43,18 @@ public class UsuarioController {
         return usuarioService.buscarUsuarioId(id);
     }
 
-    @GetMapping (path = "/{nomeUsuario}/{emailUsuario}")
-    public Page<Usuario> listarUsuariosPorNomeEEmail(
-            @RequestParam String usuario,
-            @RequestParam String email,
-            @PageableDefault(sort = "nome") @ApiIgnore Pageable pageable){
-        return usuarioService.listarPorNomeEEmail(usuario, email, pageable);
+    @GetMapping
+    public List<Usuario> listarUsuariosPorNomeEmail(
+            @RequestParam (required = false) String nome,
+            @RequestParam (required = false) String email)
+            {
+        return (List<Usuario>) usuarioService.listarPorNomeEmail(nome, email);
     }
 
-//    @GetMapping (path = "/listaremail/{emailUsuario}")
-//    public Page<Usuario> listarUsuariosEmail(String usuario, @PageableDefault(sort = "nome") @ApiIgnore Pageable pageable){
-//        return usuarioService.listarPorEmail(usuario, pageable);
-//    }
-//
-//    @GetMapping (path = "/listar/{nomeUsuario}/{emailUsuario}")
-//    public Page<Usuario> listarUsuariosNomeEmail(String usuario, String email, @PageableDefault(sort = "nome") @ApiIgnore Pageable pageable){
-//        return usuarioService.listarPorNomeEEmail(usuario, email, pageable);
-//    }
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void login(@RequestBody @Valid Usuario loginUsuario){
+        usuarioService.login(loginUsuario);
+    }
 
 }

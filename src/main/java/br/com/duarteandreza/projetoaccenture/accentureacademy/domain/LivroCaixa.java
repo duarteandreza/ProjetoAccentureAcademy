@@ -14,12 +14,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+
 public class LivroCaixa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private Clientes idCliente;
+    private Long id;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_cliente")
+    private Clientes cliente;
     @NotNull(message = "O campo 'Data de Lançamento' é obrigatório.")
     private LocalDate dataLancamento;
     @NotBlank(message = "O campo 'Descrição' é obrigatório.")

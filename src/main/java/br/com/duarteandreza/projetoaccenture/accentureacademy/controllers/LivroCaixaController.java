@@ -3,6 +3,7 @@ package br.com.duarteandreza.projetoaccenture.accentureacademy.controllers;
 
 import br.com.duarteandreza.projetoaccenture.accentureacademy.domain.LivroCaixa;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.requests.AlterarDadosLivroRequest;
+import br.com.duarteandreza.projetoaccenture.accentureacademy.requests.CadastrarLivroRequest;
 import br.com.duarteandreza.projetoaccenture.accentureacademy.services.LivroCaixaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,15 +16,16 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/registroLivroCaixa")
+@RequestMapping("/livro")
 public class LivroCaixaController {
 
     @Autowired
     private LivroCaixaService livroCaixaService;
 
     @PostMapping
-    public LivroCaixa incluirNovo(@RequestBody @Valid LivroCaixa livroCaixa){
-        return livroCaixaService.incluir(livroCaixa);
+    @ResponseStatus(HttpStatus.CREATED)
+    public LivroCaixa incluirNovo(@RequestBody @Valid CadastrarLivroRequest cadastrarLivroRequest){
+        return livroCaixaService.incluir(cadastrarLivroRequest);
     }
 
     @PutMapping(path = "/{id}/alterar")
@@ -42,10 +44,10 @@ public class LivroCaixaController {
         return livroCaixaService.buscarLivroId(id);
     }
 
-//    @GetMapping(path = "/clientes/{id}")
-//    public Page<LivroCaixa> listarLivroCaixa(LivroCaixa livroCaixa, @PageableDefault(sort = "nome") @ApiIgnore Pageable pageable){
-//        return livroCaixaService.listar(livroCaixa, pageable);
-//    }
+    @GetMapping(path = "/clientes/{idCliente}")
+    public Page<LivroCaixa> listarLivroCaixaIdCliente(@PathVariable("idCliente") Long idCliente, @PageableDefault(sort = "nome") @ApiIgnore Pageable pageable){
+        return livroCaixaService.listarLivroCaixaIdCliente(idCliente, pageable);
+    }
 
 
 }
